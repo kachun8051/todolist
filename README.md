@@ -15,3 +15,4 @@ A list is used to store string. The list can be listed, added, removed, dumped d
 
 
 ## How to call the API by using postman?
+![GET /list](./postman_image/list.png)
