@@ -21,7 +21,7 @@ function findItem2(_item) {
 
 const date = new Date()
 
-exports.get = (route, item) => {
+exports.post = (route, item) => {
     console.log('route in route.js:' + route)
     console.log('item in route.js: ' + item)
     if (lists === undefined) {
@@ -29,30 +29,6 @@ exports.get = (route, item) => {
         return {'code': status.notFound, 'body': 'no lists found'} 
     } 
     switch(route){
-        case "list":
-            return {'code': 200, 'body': lists};
-        case "count":
-            return {'code': 200, 'body': lists.count()}
-        case "removeall":
-            lists.splice(0, lists.length)
-            return {'code': status.ok, 'body': "remove all successfully"}
-        case "remove":
-            try {
-                let foundindex_1 = findItem2(item) //lists.indexOf(item_1.toUpperCase())
-                console.log("index found: " + foundindex_1)
-                if (foundindex_1 === -1) {      
-                    //res.send(status.ok, {item: item, message: `item (${item}) is NOT existed!`})      
-                    return {'code': status.ok, 'body': `item (${item}) is NOT existed!`} 
-                } else {      
-                    console.log('splicing')
-                    lists.splice(foundindex_1, 1)
-                    console.log('spliced')
-		            //res.send(status.ok, {item: item, message: `item (${item}) is deleted successfully.`})
-                    return {'code': status.ok, 'body': item}
-                }
-            } catch (err) {
-                return {'code': status.notFound, 'body': err.message}
-            }            
         case "add":
             try{
                 console.log("item: " + item)
@@ -75,6 +51,56 @@ exports.get = (route, item) => {
             } finally {
                 //resp.end()
             }
+        default:
+            return {'code': 400, 'body': 'Bad Request'};
+    }
+} 
+
+exports.put = (route, item) => {
+    console.log('route in route.js:' + route)
+    console.log('item in route.js: ' + item)
+    if (lists === undefined) {
+        //resp.send(status.notFound, {message: 'no lists found'})                    
+        return {'code': status.notFound, 'body': 'no lists found'} 
+    } 
+    switch(route){
+        case "removeall":
+            lists.splice(0, lists.length)
+            return {'code': status.ok, 'body': "remove all successfully"}
+        case "remove":
+            try {
+                let foundindex_1 = findItem2(item) //lists.indexOf(item_1.toUpperCase())
+                console.log("index found: " + foundindex_1)
+                if (foundindex_1 === -1) {      
+                    //res.send(status.ok, {item: item, message: `item (${item}) is NOT existed!`})      
+                    return {'code': status.ok, 'body': `item (${item}) is NOT existed!`} 
+                } else {      
+                    console.log('splicing')
+                    lists.splice(foundindex_1, 1)
+                    console.log('spliced')
+		            //res.send(status.ok, {item: item, message: `item (${item}) is deleted successfully.`})
+                    return {'code': status.ok, 'body': item}
+                }
+            } catch (err) {
+                return {'code': status.notFound, 'body': err.message}
+            }
+        default:
+            return {'code': 400, 'body': 'Bad Request'};        
+    }
+} 
+
+exports.get = (route, item) => {
+    console.log('route in route.js:' + route)
+    console.log('item in route.js: ' + item)
+    if (lists === undefined) {
+        //resp.send(status.notFound, {message: 'no lists found'})                    
+        return {'code': status.notFound, 'body': 'no lists found'} 
+    } 
+    switch(route){
+        case "list":
+            return {'code': 200, 'body': lists};
+        case "count":
+            return {'code': 200, 'body': lists.count()}
         default:
             return {'code': 400, 'body': 'Bad Request'};
     }
