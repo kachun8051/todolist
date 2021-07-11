@@ -29,6 +29,31 @@ exports.post = (route, item) => {
         return {'code': status.notFound, 'body': 'no lists found'} 
     } 
     switch(route){
+        case "addall":
+            try {
+                console.log("item: " + item)
+                if (Array.isArray(item) == false) {
+                    throw new Error('invalid itemlist data')
+                    return
+                }                
+                let howmanyadded = 0
+                for(let j = 0; j< item.length; j++) {
+                    let foundindex = findItem2(item[j]) 
+                    console.log('${j}: index found: ' + foundindex)
+                    if (foundindex == -1) {
+                        lists.push(item[j])
+                        howmanyadded += 1
+                    }  
+                }
+                if (howmanyadded === 0) {
+                    return {'code': status.ok, 'body': {itemlistcount: item.length, itemaddedcount: howmanyadded, message: 'item(s) provided are included and no item(s) are added!'}}
+                } else {
+                    return {'code': status.created, 'body': {itemlistcount: item.length, itemaddedcount: howmanyadded, message: 'item(s) are added'}}
+                }
+            } catch (err) {
+                return {'code': status.notFound, 'body': err.message}
+            }
+            break
         case "add":
             try{
                 console.log("item: " + item)
@@ -51,6 +76,7 @@ exports.post = (route, item) => {
             } finally {
                 //resp.end()
             }
+            break
         default:
             return {'code': 400, 'body': 'Bad Request'};
     }
@@ -67,6 +93,7 @@ exports.put = (route, item) => {
         case "removeall":
             lists.splice(0, lists.length)
             return {'code': status.ok, 'body': "remove all successfully"}
+            break
         case "remove":
             try {
                 let foundindex_1 = findItem2(item) //lists.indexOf(item_1.toUpperCase())
@@ -84,14 +111,15 @@ exports.put = (route, item) => {
             } catch (err) {
                 return {'code': status.notFound, 'body': err.message}
             }
+            break
         default:
             return {'code': 400, 'body': 'Bad Request'};        
     }
 } 
 
-exports.get = (route, item) => {
+exports.get = (route) => {
     console.log('route in route.js:' + route)
-    console.log('item in route.js: ' + item)
+    //console.log('item in route.js: ' + item)
     if (lists === undefined) {
         //resp.send(status.notFound, {message: 'no lists found'})                    
         return {'code': status.notFound, 'body': 'no lists found'} 

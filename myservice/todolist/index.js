@@ -24,49 +24,50 @@ module.exports.handler = function(req, resp, context) {
         switch(req.method) {
             case 'GET':
                 //resp.send(JSON.stringify({'code': 200, 'body': r.get(route, null)}))
-                resp.send(JSON.stringify(r.get(route, null)))
+                resp.send(JSON.stringify(r.get(route)))
                 break
-            case 'DELETE':
+            case 'PUT':
+                if (route === 'removeall') {
+                    resp.send(JSON.stringify(r.put(route, null)))                    
+                } else {
+                    getRawBody(req, (err, body) => {
+                        //resp.send(JSON.stringify(routes.post(route, body.toString(),null, ' ')));
+                                            
+                        console.log("body: " + body)
+                        if (body === undefined) {
+                            //throw new Error('invalid item data')
+                            resp.send(status.notFound, {message: 'invalid item data'})                    
+                            return
+                        }  
+                        let item_del = JSON.parse(body).item
+                        if (typeof item_del !== 'string') {
+                            //throw new Error('invalid item data')
+                            resp.send(status.notFound, {message: 'invalid item data'})                    
+                            return
+                        }
+                        let remove_resp = r.put(route, item_del)
+                        resp.send(JSON.stringify(remove_resp))
+                    })
+                }
+                break
+            case 'POST':                
                 getRawBody(req, (err, body) => {
-                    //resp.send(JSON.stringify(routes.post(route, body.toString(),null, ' ')));
+                    console.log("body: " + body)
                     if (body === undefined) {
                         console.log("body is undefined")
-                    }                    
-                    console.log("body: " + body)
-                    let item_del = JSON.parse(body).item
-                    if (item_del === undefined) {
-                        console.log("item is undefined")
-                    }
-                    if (body === undefined || typeof item_del !== 'string') {
-                        //throw new Error('invalid item data')
                         resp.send(status.notFound, {message: 'invalid item data'})                    
                         return
                     }
-                    let respfromdel = r.get(route, item_del)
-                    console.log('remove response: ' + respfromdel)
-                    resp.send(JSON.stringify(respfromdel))
-                    return 
-                });
-            case 'POST':
-                //console.log('item? ' + req.body.item)
-                getRawBody(req, (err, body) => {
-                    //resp.send(JSON.stringify(routes.post(route, body.toString(),null, ' ')));
-                    if (body === undefined) {
-                        console.log("body is undefined")
-                    }                    
-                    console.log("body: " + body)
                     let item = JSON.parse(body).item
                     if (item === undefined) {
                         console.log("item is undefined")
-                    }
-                    if (body === undefined || typeof item !== 'string') {
-                        //throw new Error('invalid item data')
                         resp.send(status.notFound, {message: 'invalid item data'})                    
                         return
                     }
-                    resp.send(JSON.stringify(r.get(route, item)))
+                    resp.send(JSON.stringify(r.post(route, item)))
                     return 
-                });                
+                })
+                break           
         }
     }
 }
